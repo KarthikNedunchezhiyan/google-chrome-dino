@@ -1,0 +1,21 @@
+name: Rust
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: npm install
+      run: cd www && npm install --save
+    - name: npm build
+      run: cd www && webpack --config webpack.config.js && ls -lhtr
+    - name: publish
+      run: git config --global user.email "karthik1705.n@gmail.com" && git config --global user.name "Karthik Nedunchezhiyan" && git add . && git commit -m "dist update" && git push origin `git subtree split --prefix www main`:gh-pages --force
