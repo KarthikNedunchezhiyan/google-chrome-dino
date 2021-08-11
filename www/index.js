@@ -80,7 +80,7 @@ function initialize() {
     canvas.height = ROWS;
     canvas.width = COLUMNS;
 
-    document.onclick = () => {
+    document.ontouchstart = () => {
         if (game_over && (Date.now() - game_over) > 1000) {
             main();
             return;
@@ -95,7 +95,7 @@ function initialize() {
     document.body.onkeydown = event => {
         // keyCode is depricated
         if (event.keyCode === 32 || event.key === ' ') {
-            document.onclick();
+            document.ontouchstart();
         }
     };
 }

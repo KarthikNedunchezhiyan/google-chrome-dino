@@ -2,6 +2,8 @@
 
 This is a recreation of everyone's favorite offline companion, [google chrome dinosaur game](https://en.wikipedia.org/wiki/Dinosaur_Game), with the same classic monochrome interface.
 
+Live demo available [here](http://karthiknedunchezhiyan.me/google-chrome-dino/).
+
 ## Screenshots
 
 Screenshot 1             |  Screenshot 2  
