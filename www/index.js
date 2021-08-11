@@ -226,4 +226,6 @@ function main() {
     event_loop();
 }
 
-main();
+document.fonts.load('1rem "Arcade"').then(() => {
+    main();
+});
