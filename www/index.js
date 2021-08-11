@@ -50,7 +50,7 @@ let harmless_character_allocator = [
         new AllocatorCharacterArray()
             .add_character(new CharacterMeta([pit_layout.large], 0, new Position(223, COLUMNS), FLOOR_VELOCITY), 0.97)
             .add_character(new CharacterMeta([pit_layout.up], 0, new Position(227, COLUMNS), FLOOR_VELOCITY), 0.90)
-            .add_character(new CharacterMeta([pit_layout.down], 0, new Position(232, COLUMNS), FLOOR_VELOCITY), 0.85)
+            .add_character(new CharacterMeta([pit_layout.down], 0, new Position(230, COLUMNS), FLOOR_VELOCITY), 0.85)
         , 100, 50
     )
 ];
