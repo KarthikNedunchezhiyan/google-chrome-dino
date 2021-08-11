@@ -65,7 +65,7 @@ let harmfull_character_allocator = [
             .add_character(new CharacterMeta([cactus_layout.medium_s1], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.4)
             .add_character(new CharacterMeta([cactus_layout.medium_s2], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.3)
 
-        , 10, 150
+        , 30, 150
     ),
     new CharacterAllocator(
         new AllocatorCharacterArray()
