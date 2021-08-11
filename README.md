@@ -6,9 +6,13 @@ Live demo available [here](http://karthiknedunchezhiyan.me/google-chrome-dino/).
 
 ## Screenshots
 
-Screenshot 1             |  Screenshot 2  
-:-------------------------:|:-------------------------:
-![](www/assets/game_run.png)  |  ![](www/assets/game_over.png)
+Screenshot 1             |
+:-------------------------:
+![](www/assets/game_run.png)
+
+Screenshot 2             |
+:-------------------------:
+![](www/assets/game_over.png)
 
 ## Functionality
 
