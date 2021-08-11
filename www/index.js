@@ -22,6 +22,7 @@ const DINO_FLOOR_INITIAL_POSITION = new Position(200, 10);
 let dino_current_trust = new Velocity(0, 0);
 let dino_ready_to_jump = true;
 let game_over = null;
+let is_first_time = true;
 let game_score = null;
 let game_hi_score = null;
 
@@ -123,6 +124,26 @@ function event_loop() {
         canvas_ctx.fillRect(0, 232, canvas.width, CELL_SIZE * 0.2);
     }
 
+    // score card update
+    game_score += 0.10;
+    canvas_ctx.font = "20px Arcade";
+    canvas_ctx.fillStyle = "#747474";
+    canvas_ctx.fillText(`H I     ${Math.floor(game_hi_score).toString().padStart(4, '0').split('').join(" ")}     ${Math.floor(game_score).toString().padStart(4, '0').split('').join(" ")}`, canvas.width - 200, 20);
+
+    // first time
+    if (is_first_time) {
+        is_first_time = false;
+        paint_layout(dino_layout.stand, harmfull_characters_pool[0].get_position().get());
+        game_over = Date.now();
+
+        canvas_ctx.textBaseline = 'middle';
+        canvas_ctx.textAlign = 'center';
+        canvas_ctx.font = "25px Arcade";
+        canvas_ctx.fillStyle = "#535353";
+        canvas_ctx.fillText("J     U     M     P             T     O             S     T     A     R     T", canvas.width / 2, (canvas.height / 2) - 50);
+        return;
+    }
+
     // characters
     // new characters generate
     [[harmless_character_allocator, harmless_characters_pool], [harmfull_character_allocator, harmfull_characters_pool]].forEach(character_allocator_details => {
@@ -171,12 +192,6 @@ function event_loop() {
     }
 
     dino_current_trust.sub(ENVIRONMENT_GRAVITY);
-
-    // score card update
-    game_score += 0.10;
-    canvas_ctx.font = "20px Arcade";
-    canvas_ctx.fillStyle = "#747474";
-    canvas_ctx.fillText(`H I     ${Math.floor(game_hi_score).toString().padStart(4, '0').split('').join(" ")}     ${Math.floor(game_score).toString().padStart(4, '0').split('').join(" ")}`, canvas.width - 200, 20);
 
 
     // harmfull characters collision detection
