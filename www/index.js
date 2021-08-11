@@ -59,10 +59,13 @@ let harmfull_character_allocator = [
     new CharacterAllocator(
         new AllocatorCharacterArray()
             .add_character(new CharacterMeta([cactus_layout.small_d1], 0, new Position(201, COLUMNS), FLOOR_VELOCITY), 0.8)
-            .add_character(new CharacterMeta([cactus_layout.small_s1], 0, new Position(201, COLUMNS), FLOOR_VELOCITY), 0.5)
-            .add_character(new CharacterMeta([cactus_layout.small_s2], 0, new Position(201, COLUMNS), FLOOR_VELOCITY), 0.3)
+            .add_character(new CharacterMeta([cactus_layout.small_s1], 0, new Position(201, COLUMNS), FLOOR_VELOCITY), 0.7)
+            .add_character(new CharacterMeta([cactus_layout.small_s2], 0, new Position(201, COLUMNS), FLOOR_VELOCITY), 0.6)
+            .add_character(new CharacterMeta([cactus_layout.medium_d1], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.5)
+            .add_character(new CharacterMeta([cactus_layout.medium_s1], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.4)
+            .add_character(new CharacterMeta([cactus_layout.medium_s2], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.3)
 
-        , 10, 100
+        , 10, 150
     ),
     new CharacterAllocator(
         new AllocatorCharacterArray()
@@ -182,19 +185,9 @@ function event_loop() {
         }
     });
 
-    // dino jump case
-    let dino_character = harmfull_characters_pool[0];
-    dino_character.set_position(applyVelocityToPosition(dino_character.get_position(), dino_current_trust));
-
-    if (dino_character.get_position().get()[0] > DINO_FLOOR_INITIAL_POSITION.get()[0]) {
-        dino_character.set_position(DINO_FLOOR_INITIAL_POSITION.clone());
-        dino_ready_to_jump = true;
-    }
-
-    dino_current_trust.sub(ENVIRONMENT_GRAVITY);
-
 
     // harmfull characters collision detection
+    let dino_character = harmfull_characters_pool[0];
     let dino_current_position = dino_character.get_position();
     let dino_current_layout = dino_character.get_layout();
     for (let i = harmfull_characters_pool.length - 1; i > 0; i--) {
@@ -207,6 +200,7 @@ function event_loop() {
             canvas_ctx.fillStyle = "#535353";
             canvas_ctx.fillText("G     A     M     E             O     V     E     R", canvas.width / 2, (canvas.height / 2) - 50);
             paint_layout(retry_layout, new Position((canvas.height / 2) - retry_layout.length, (canvas.width / 2) - retry_layout[0].length).get());
+            paint_layout(dino_layout.dead, harmfull_characters_pool[0].get_position().get());
             game_over = Date.now();
 
 
@@ -217,6 +211,16 @@ function event_loop() {
             return;
         }
     }
+
+    // dino jump case
+    dino_character.set_position(applyVelocityToPosition(dino_character.get_position(), dino_current_trust));
+
+    if (dino_character.get_position().get()[0] > DINO_FLOOR_INITIAL_POSITION.get()[0]) {
+        dino_character.set_position(DINO_FLOOR_INITIAL_POSITION.clone());
+        dino_ready_to_jump = true;
+    }
+
+    dino_current_trust.sub(ENVIRONMENT_GRAVITY);
 
     requestAnimationFrame(event_loop);
 }
