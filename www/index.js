@@ -26,11 +26,11 @@ let game_over = null;
 let is_first_time = true;
 let game_score = null;
 let game_hi_score = null;
+let step_velocity = new Velocity(0, -0.05);
+let cumulative_velocity = null;
 
-let harmless_characters_pool = [];
-let harmfull_characters_pool = [
-    new Character(new CharacterMeta(dino_layout.run, 4, DINO_FLOOR_INITIAL_POSITION.clone(), new Velocity(0, 0)))
-];
+let harmless_characters_pool = null;
+let harmfull_characters_pool = null;
 
 let harmless_character_allocator = [
     new CharacterAllocator(
@@ -66,7 +66,7 @@ let harmfull_character_allocator = [
             .add_character(new CharacterMeta([cactus_layout.medium_s1], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.4)
             .add_character(new CharacterMeta([cactus_layout.medium_s2], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.3)
 
-        , CACTUS_MIN_GAP, 150
+        , CACTUS_MIN_GAP, 100
     ),
     new CharacterAllocator(
         new AllocatorCharacterArray()
@@ -77,12 +77,17 @@ let harmfull_character_allocator = [
 ]
 
 function initialize() {
+    cumulative_velocity = new Velocity(0, 0);
     game_over = false;
     game_score = 0;
     game_hi_score = localStorage.getItem("project.github.chrome_dino.high_score") || 0;
-    harmfull_characters_pool.splice(1);
     canvas.height = ROWS;
     canvas.width = COLUMNS;
+
+    harmless_characters_pool = [];
+    harmfull_characters_pool = [
+        new Character(new CharacterMeta(dino_layout.run, 4, DINO_FLOOR_INITIAL_POSITION.clone(), new Velocity(0, 0)))
+    ];
 
     document.ontouchstart = () => {
         if (game_over && (Date.now() - game_over) > 1000) {
@@ -130,9 +135,10 @@ function event_loop() {
 
     // score card update
     game_score += 0.10;
+    const ROUNDED_GAME_SCORE = Math.floor(game_score);
     canvas_ctx.font = "20px Arcade";
     canvas_ctx.fillStyle = "#747474";
-    canvas_ctx.fillText(`H I     ${Math.floor(game_hi_score).toString().padStart(4, '0').split('').join(" ")}     ${Math.floor(game_score).toString().padStart(4, '0').split('').join(" ")}`, canvas.width - 200, 20);
+    canvas_ctx.fillText(`H I     ${Math.floor(game_hi_score).toString().padStart(4, '0').split('').join(" ")}     ${ROUNDED_GAME_SCORE.toString().padStart(4, '0').split('').join(" ")}`, canvas.width - 200, 20);
 
     // first time
     if (is_first_time) {
@@ -156,15 +162,27 @@ function event_loop() {
             ALLOCATOR.tick();
             const RANDOM_CHARACTER = ALLOCATOR.get_character();
             if (RANDOM_CHARACTER) {
+                RANDOM_CHARACTER.get_velocity().add(cumulative_velocity);
                 character_allocator_details[1].push(RANDOM_CHARACTER);
             }
         }
     });
 
+    // increase velocity
+    if (ROUNDED_GAME_SCORE % 100 == 0) {
+        cumulative_velocity.add(step_velocity);
+    }
+
     // characters display
     [harmless_characters_pool, harmfull_characters_pool].forEach((characters_pool, index) => {
 
         for (let i = characters_pool.length - 1; i >= 0; i--) {
+
+            // Increase velocity on each cycle
+            if ((!(index == 1 && i == 0)) && (ROUNDED_GAME_SCORE % 100 == 0)) {
+                characters_pool[i].get_velocity().add(step_velocity);
+            }
+
             characters_pool[i].tick();
             let CHARACTER_LAYOUT = characters_pool[i].get_layout();
 

@@ -21,7 +21,7 @@ Screenshot 2             |
 - ✅ Spacebar keypress on PC or click on touch devices should make the dino jump.
 - ✅ Parallax view.
 - ✅ Mobile responsiveness.
-- ⬜️ Increase game speed based on time.
+- ✅ Gradual inncrease in game speed.
 - ⬜️ Duck position.
 
 ## Contributing
