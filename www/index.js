@@ -9,14 +9,15 @@ const CELL_SIZE = 2;
 const ROWS = 300;
 let COLUMNS = 1000;
 const FLOOR_VELOCITY = new Velocity(0, -7);
+let CACTUS_MIN_GAP = 20;
 
 if (screen.width < COLUMNS) {
     COLUMNS = screen.width;
     FLOOR_VELOCITY.add(new Velocity(0, 2));
+    CACTUS_MIN_GAP = 50;
 }
 
-
-const DINO_INITIAL_TRUST = new Velocity(-12, 0);
+const DINO_INITIAL_TRUST = new Velocity(-11, 0);
 const ENVIRONMENT_GRAVITY = new Velocity(-0.6, 0);
 const DINO_FLOOR_INITIAL_POSITION = new Position(200, 10);
 let dino_current_trust = new Velocity(0, 0);
@@ -29,7 +30,7 @@ let game_hi_score = null;
 let harmless_characters_pool = [];
 let harmfull_characters_pool = [
     new Character(new CharacterMeta(dino_layout.run, 4, DINO_FLOOR_INITIAL_POSITION.clone(), new Velocity(0, 0)))
-];;
+];
 
 let harmless_character_allocator = [
     new CharacterAllocator(
@@ -65,7 +66,7 @@ let harmfull_character_allocator = [
             .add_character(new CharacterMeta([cactus_layout.medium_s1], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.4)
             .add_character(new CharacterMeta([cactus_layout.medium_s2], 0, new Position(193, COLUMNS), FLOOR_VELOCITY), 0.3)
 
-        , 30, 150
+        , CACTUS_MIN_GAP, 150
     ),
     new CharacterAllocator(
         new AllocatorCharacterArray()
