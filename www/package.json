@@ -1,5 +1,5 @@
 {
-  "name": "wasm-chrome-dino",
+  "name": "chrome-dino",
   "scripts": {
     "start": "webpack-dev-server"
   },
