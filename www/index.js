@@ -86,6 +86,7 @@ let harmfull_character_allocator = [
 ]
 
 function initialize() {
+    current_theme = themes.classic;
     cumulative_velocity = new Velocity(0, 0);
     game_over = false;
     game_score = 0;
@@ -140,9 +141,7 @@ function event_loop() {
         game_score++;
     }
 
-    if (game_score < 1) {
-        current_theme = themes.classic;
-    } else if (game_score % 300 == 0) {
+    if (game_score != 0 && game_score % 300 == 0) {
         game_score++;
         if (current_theme.id == 1) {
             current_theme = themes.dark;

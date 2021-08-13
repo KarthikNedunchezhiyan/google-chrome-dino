@@ -398,7 +398,7 @@ module.exports = {
             road: "#535353",
             score_text: "#747474",
             info_text: "#535353",
-            layout: [false, "#ffffff", "#535353", "#dadada", "#535353", "#ffffff"]
+            layout: [false, "#ffffff", "#535353", "#dadada", "#535353", false]
         },
         dark: {
             id: 2,
@@ -406,7 +406,7 @@ module.exports = {
             road: "#acacac",
             score_text: "#909191",
             info_text: "#acacac",
-            layout: [false, "#202225", "#acacac", "#252525", "#acacac", "#3e3f3f"]
+            layout: [false, "#202225", "#acacac", "#3e3f3f", "#acacac", "#3e3f3f"]
         }
     }
 }
