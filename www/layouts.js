@@ -1,5 +1,23 @@
-const COLORS = [false, "#ffffff", "#535353", "#dadada", "#535353"]
-
+const STAR_SMALL_S1 = [
+    [0, 0, 0, 0, 5, 0, 0, 0, 0],
+    [0, 0, 5, 0, 5, 0, 5, 0, 0],
+    [0, 5, 0, 0, 5, 0, 0, 5, 0],
+    [0, 0, 0, 5, 5, 5, 0, 0, 0],
+    [5, 5, 5, 5, 5, 5, 5, 5, 5],
+    [0, 0, 0, 5, 5, 5, 0, 0, 0],
+    [0, 5, 0, 0, 5, 0, 0, 5, 0],
+    [0, 0, 5, 0, 5, 0, 5, 0, 0],
+    [0, 0, 0, 0, 5, 0, 0, 0, 0],
+];
+const STAR_SMALL_S2 = [
+    [0, 0, 0, 5, 0, 0, 0],
+    [0, 0, 0, 5, 0, 0, 0],
+    [0, 0, 5, 5, 5, 0, 0],
+    [5, 5, 5, 5, 5, 5, 5],
+    [0, 0, 5, 5, 5, 0, 0],
+    [0, 0, 0, 5, 0, 0, 0],
+    [0, 0, 0, 5, 0, 0, 0],
+];
 
 const DINO_STAND = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -368,6 +386,27 @@ module.exports = {
         medium_s2: CACTUS_MEDIUM_S2,
         medium_d1: CACTUS_MEDIUM_D1
     },
+    star_layout: {
+        small_s1: STAR_SMALL_S1,
+        small_s2: STAR_SMALL_S2
+    },
     retry_layout: RETRY,
-    colors: COLORS
+    themes: {
+        classic: {
+            id: 1,
+            background: "#ffffff",
+            road: "#535353",
+            score_text: "#747474",
+            info_text: "#535353",
+            layout: [false, "#ffffff", "#535353", "#dadada", "#535353", "#ffffff"]
+        },
+        dark: {
+            id: 2,
+            background: "#202225",
+            road: "#acacac",
+            score_text: "#909191",
+            info_text: "#acacac",
+            layout: [false, "#202225", "#acacac", "#252525", "#acacac", "#3e3f3f"]
+        }
+    }
 }

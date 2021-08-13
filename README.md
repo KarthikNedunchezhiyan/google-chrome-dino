@@ -16,6 +16,15 @@ Screenshot 2             |
 :-------------------------:
 ![](www/assets/game_over.png)
 
+Screenshot 3             |
+:-------------------------:
+![](www/assets/game_run_dark.png)
+
+Screenshot 4             |
+:-------------------------:
+![](www/assets/game_over_dark.png)
+
+
 ## Functionality
 
 - ✅ Cactus obstacles.
@@ -24,6 +33,7 @@ Screenshot 2             |
 - ✅ Parallax view.
 - ✅ Mobile responsiveness.
 - ✅ Gradual inncrease in game speed.
+- ✅ Day and night cycle.
 - ⬜️ Duck position.
 
 ## Contributing

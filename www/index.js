@@ -1,5 +1,5 @@
 import { AllocatorCharacterArray, Character, CharacterAllocator, CharacterMeta } from "./character";
-import { dino_layout, stone_layout, colors, cloud_layout, pit_layout, bird_layout, cactus_layout, retry_layout } from "./layouts";
+import { dino_layout, stone_layout, themes, cloud_layout, pit_layout, bird_layout, cactus_layout, retry_layout, star_layout } from "./layouts";
 import { applyVelocityToPosition, isCollided, Position, Velocity } from "./physics";
 
 const canvas = document.getElementById("board");
@@ -25,9 +25,11 @@ let dino_ready_to_jump = true;
 let game_over = null;
 let is_first_time = true;
 let game_score = null;
+let game_score_step = 0;
 let game_hi_score = null;
-let step_velocity = new Velocity(0, -0.05);
+let step_velocity = new Velocity(0, -0.1);
 let cumulative_velocity = null;
+let current_theme = null;
 
 let harmless_characters_pool = null;
 let harmfull_characters_pool = null;
@@ -45,7 +47,14 @@ let harmless_character_allocator = [
             .add_character(new CharacterMeta([cloud_layout], 0, new Position(100, COLUMNS), new Velocity(0, -1)), 0.9)
             .add_character(new CharacterMeta([cloud_layout], 0, new Position(135, COLUMNS), new Velocity(0, -1)), 0.85)
             .add_character(new CharacterMeta([cloud_layout], 0, new Position(150, COLUMNS), new Velocity(0, -1)), 0.8)
-        , 400, 300
+        , 350, 300
+    ),
+    new CharacterAllocator(
+        new AllocatorCharacterArray()
+            .add_character(new CharacterMeta([star_layout.small_s1], 0, new Position(90, COLUMNS), new Velocity(0, -0.3)), 0.9)
+            .add_character(new CharacterMeta([star_layout.small_s2], 0, new Position(125, COLUMNS), new Velocity(0, -0.3)), 0.85)
+            .add_character(new CharacterMeta([star_layout.small_s1], 0, new Position(140, COLUMNS), new Velocity(0, -0.3)), 0.8)
+        , 350, 250
     ),
     new CharacterAllocator(
         new AllocatorCharacterArray()
@@ -112,8 +121,8 @@ function initialize() {
 function paint_layout(character_layout, character_position) {
     for (let j = 0; j < character_layout.length; j++) {
         for (let k = 0; k < character_layout[j].length; k++) {
-            if (colors[character_layout[j][k]]) {
-                canvas_ctx.fillStyle = colors[character_layout[j][k]];
+            if (current_theme.layout[character_layout[j][k]]) {
+                canvas_ctx.fillStyle = current_theme.layout[character_layout[j][k]];
                 let x_pos = character_position[1] + (k * CELL_SIZE);
                 let y_pos = character_position[0] + (j * CELL_SIZE);
 
@@ -124,21 +133,39 @@ function paint_layout(character_layout, character_position) {
 }
 
 function event_loop() {
+    game_score_step += 0.15;
+
+    if (game_score_step > 1) {
+        game_score_step -= 1;
+        game_score++;
+    }
+
+    if (game_score < 1) {
+        current_theme = themes.classic;
+    } else if (game_score % 300 == 0) {
+        game_score++;
+        if (current_theme.id == 1) {
+            current_theme = themes.dark;
+        } else {
+            current_theme = themes.classic;
+        }
+    }
+
     canvas_ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas_ctx.fillStyle = current_theme.background;
+    canvas_ctx.fillRect(0, 0, canvas.width, canvas.height);
     canvas_ctx.beginPath();
 
     // Road
     for (let i = 0; i < canvas.width; i++) {
-        canvas_ctx.fillStyle = "black";
+        canvas_ctx.fillStyle = current_theme.road;
         canvas_ctx.fillRect(0, 232, canvas.width, CELL_SIZE * 0.2);
     }
 
     // score card update
-    game_score += 0.10;
-    const ROUNDED_GAME_SCORE = Math.floor(game_score);
     canvas_ctx.font = "20px Arcade";
-    canvas_ctx.fillStyle = "#747474";
-    canvas_ctx.fillText(`H I     ${Math.floor(game_hi_score).toString().padStart(4, '0').split('').join(" ")}     ${ROUNDED_GAME_SCORE.toString().padStart(4, '0').split('').join(" ")}`, canvas.width - 200, 20);
+    canvas_ctx.fillStyle = current_theme.score_text;
+    canvas_ctx.fillText(`H I     ${Math.floor(game_hi_score).toString().padStart(4, '0').split('').join(" ")}     ${game_score.toString().padStart(4, '0').split('').join(" ")}`, canvas.width - 200, 20);
 
     // first time
     if (is_first_time) {
@@ -149,7 +176,7 @@ function event_loop() {
         canvas_ctx.textBaseline = 'middle';
         canvas_ctx.textAlign = 'center';
         canvas_ctx.font = "25px Arcade";
-        canvas_ctx.fillStyle = "#535353";
+        canvas_ctx.fillStyle = current_theme.info_text;
         canvas_ctx.fillText("J     U     M     P             T     O             S     T     A     R     T", canvas.width / 2, (canvas.height / 2) - 50);
         return;
     }
@@ -169,7 +196,7 @@ function event_loop() {
     });
 
     // increase velocity
-    if (ROUNDED_GAME_SCORE % 100 == 0) {
+    if (game_score % 100 == 0) {
         cumulative_velocity.add(step_velocity);
     }
 
@@ -179,7 +206,7 @@ function event_loop() {
         for (let i = characters_pool.length - 1; i >= 0; i--) {
 
             // Increase velocity on each cycle
-            if ((!(index == 1 && i == 0)) && (ROUNDED_GAME_SCORE % 100 == 0)) {
+            if ((!(index == 1 && i == 0)) && (game_score % 100 == 0)) {
                 characters_pool[i].get_velocity().add(step_velocity);
             }
 
@@ -216,7 +243,7 @@ function event_loop() {
             canvas_ctx.textBaseline = 'middle';
             canvas_ctx.textAlign = 'center';
             canvas_ctx.font = "25px Arcade";
-            canvas_ctx.fillStyle = "#535353";
+            canvas_ctx.fillStyle = current_theme.info_text;
             canvas_ctx.fillText("G     A     M     E             O     V     E     R", canvas.width / 2, (canvas.height / 2) - 50);
             paint_layout(retry_layout, new Position((canvas.height / 2) - retry_layout.length, (canvas.width / 2) - retry_layout[0].length).get());
             paint_layout(dino_layout.dead, harmfull_characters_pool[0].get_position().get());
