@@ -4,6 +4,8 @@ This is a recreation of everyone's favorite offline companion, [google chrome di
 
 Live demo available [here](http://karthiknedunchezhiyan.me/google-chrome-dino/).
 
+![chrom-dino-clip](www/assets/chrome-dino.gif)
+
 ## Screenshots
 
 Screenshot 1             |
