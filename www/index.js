@@ -111,6 +111,12 @@ function initialize() {
         }
     };
 
+    document.body.onclick = () => {
+        if (game_over) {
+            document.ontouchstart();
+        }
+    };
+
     document.body.onkeydown = event => {
         // keyCode is depricated
         if (event.keyCode === 32 || event.key === ' ') {
