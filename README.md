@@ -37,6 +37,7 @@ Screenshot 4             |
 - ✅ Gradual inncrease in game speed.
 - ✅ Day and night cycle.
 - ⬜️ Duck position.
+- ⬜️ Small jump on quick tap.
 
 ## Contributing
 
