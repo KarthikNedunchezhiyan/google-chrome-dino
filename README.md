@@ -1,3 +1,5 @@
+### 👉 [click here to play the game](https://karthiknedunchezhiyan.me/google-chrome-dino/) 👈
+
 ![chrom-dino-clip](www/assets/chrome-dino.gif)
 
 ## Google Chrome Dinosaur Game
