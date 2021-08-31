@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'Arcade';
+    src: url('./assets/arcade_font.woff2');
+}
+
+#container {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -10%);
+}
