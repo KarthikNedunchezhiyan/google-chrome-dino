@@ -1,4 +1,4 @@
-### 👉 [click here to play the game](https://karthiknedunchezhiyan.com/google-chrome-dino/) 👈
+### 👉 [click here to play the game](https://karthiknedunchezhiyan.github.io/google-chrome-dino/) 👈
 
 ![chrom-dino-clip](www/assets/chrome-dino.gif)
 
@@ -6,7 +6,7 @@
 
 This is a recreation of everyone's favorite offline companion, [google chrome dinosaur game](https://en.wikipedia.org/wiki/Dinosaur_Game), with the same classic monochrome interface.
 
-Live demo available [here](http://karthiknedunchezhiyan.com/google-chrome-dino/).
+Live demo available [here](http://karthiknedunchezhiyan.github.io/google-chrome-dino/).
 
 ## Screenshots
 
