@@ -1,4 +1,4 @@
-### 👉 [click here to play the game](https://karthiknedunchezhiyan.me/google-chrome-dino/) 👈
+### 👉 [click here to play the game](https://karthiknedunchezhiyan.com/google-chrome-dino/) 👈
 
 ![chrom-dino-clip](www/assets/chrome-dino.gif)
 
@@ -6,7 +6,7 @@
 
 This is a recreation of everyone's favorite offline companion, [google chrome dinosaur game](https://en.wikipedia.org/wiki/Dinosaur_Game), with the same classic monochrome interface.
 
-Live demo available [here](http://karthiknedunchezhiyan.me/google-chrome-dino/).
+Live demo available [here](http://karthiknedunchezhiyan.com/google-chrome-dino/).
 
 ## Screenshots
 
@@ -34,7 +34,7 @@ Screenshot 4             |
 - ✅ Spacebar keypress on PC or click on touch devices should make the dino jump.
 - ✅ Parallax view.
 - ✅ Mobile responsiveness.
-- ✅ Gradual inncrease in game speed.
+- ✅ Gradual increase in game speed.
 - ✅ Day and night cycle.
 - ⬜️ Duck position.
 - ⬜️ Small jump on quick tap.
