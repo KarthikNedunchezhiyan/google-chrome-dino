@@ -1,4 +1,4 @@
-const { applyVelocityToPosition, Velocity } = require("./physics");
+import { applyVelocityToPosition } from "./physics";
 
 export class CharacterMeta {
     constructor(movements_array, movement_delay, position, velocity) {

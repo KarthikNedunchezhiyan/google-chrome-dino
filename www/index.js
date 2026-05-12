@@ -17,11 +17,15 @@ if (screen.width < COLUMNS) {
     CACTUS_MIN_GAP = 50;
 }
 
-const DINO_INITIAL_TRUST = new Velocity(-11, 0);
+const DINO_JUMP_INITIAL_THRUST = new Velocity(-8, 0);
+const DINO_JUMP_HOLD_BOOST = new Velocity(-0.3, 0);
+const DINO_JUMP_MAX_HOLD_FRAMES = 10;
 const ENVIRONMENT_GRAVITY = new Velocity(-0.6, 0);
 const DINO_FLOOR_INITIAL_POSITION = new Position(200, 10);
-let dino_current_trust = new Velocity(0, 0);
+let dino_current_thrust = new Velocity(0, 0);
 let dino_ready_to_jump = true;
+let is_jump_held = false;
+let jump_hold_frames_remaining = 0;
 let game_over = null;
 let is_first_time = true;
 let game_score = null;
@@ -30,9 +34,10 @@ let game_hi_score = null;
 let step_velocity = new Velocity(0, -0.1);
 let cumulative_velocity = null;
 let current_theme = null;
+let last_milestone = 0;
 
 let harmless_characters_pool = null;
-let harmfull_characters_pool = null;
+let harmful_characters_pool = null;
 
 let harmless_character_allocator = [
     new CharacterAllocator(
@@ -65,7 +70,7 @@ let harmless_character_allocator = [
     )
 ];
 
-let harmfull_character_allocator = [
+let harmful_character_allocator = [
     new CharacterAllocator(
         new AllocatorCharacterArray()
             .add_character(new CharacterMeta([cactus_layout.small_d1], 0, new Position(201, COLUMNS), FLOOR_VELOCITY), 0.8)
@@ -85,43 +90,58 @@ let harmfull_character_allocator = [
     )
 ]
 
+function handle_input_start() {
+    if (game_over && (Date.now() - game_over) > 1000) {
+        main();
+        return;
+    }
+    if (!game_over && dino_ready_to_jump) {
+        dino_ready_to_jump = false;
+        dino_current_thrust = DINO_JUMP_INITIAL_THRUST.clone();
+        is_jump_held = true;
+        jump_hold_frames_remaining = DINO_JUMP_MAX_HOLD_FRAMES;
+    }
+}
+
+function handle_input_end() {
+    is_jump_held = false;
+}
+
 function initialize() {
     current_theme = themes.classic;
     cumulative_velocity = new Velocity(0, 0);
     game_over = false;
     game_score = 0;
-    game_hi_score = localStorage.getItem("project.github.chrome_dino.high_score") || 0;
+    last_milestone = 0;
+    is_jump_held = false;
+    jump_hold_frames_remaining = 0;
+    game_hi_score = parseInt(localStorage.getItem("project.github.chrome_dino.high_score") || 0, 10);
     canvas.height = ROWS;
     canvas.width = COLUMNS;
 
     harmless_characters_pool = [];
-    harmfull_characters_pool = [
+    harmful_characters_pool = [
         new Character(new CharacterMeta(dino_layout.run, 4, DINO_FLOOR_INITIAL_POSITION.clone(), new Velocity(0, 0)))
     ];
 
-    document.ontouchstart = () => {
-        if (game_over && (Date.now() - game_over) > 1000) {
-            main();
-            return;
-        }
-
-        if (dino_ready_to_jump) {
-            dino_ready_to_jump = false;
-            dino_current_trust = DINO_INITIAL_TRUST.clone();
-        }
+    document.ontouchstart = (e) => {
+        e.preventDefault();
+        handle_input_start();
     };
+    document.ontouchend = () => handle_input_end();
 
-    document.body.onclick = () => {
-        if (game_over) {
-            document.ontouchstart();
-        }
+    document.body.onpointerdown = (e) => {
+        if (e.pointerType !== 'touch') handle_input_start();
+    };
+    document.body.onpointerup = (e) => {
+        if (e.pointerType !== 'touch') handle_input_end();
     };
 
     document.body.onkeydown = event => {
-        // keyCode is depricated
-        if (event.keyCode === 32 || event.key === ' ') {
-            document.ontouchstart();
-        }
+        if (event.key === ' ' && !event.repeat) handle_input_start();
+    };
+    document.body.onkeyup = event => {
+        if (event.key === ' ') handle_input_end();
     };
 }
 
@@ -162,10 +182,8 @@ function event_loop() {
     canvas_ctx.beginPath();
 
     // Road
-    for (let i = 0; i < canvas.width; i++) {
-        canvas_ctx.fillStyle = current_theme.road;
-        canvas_ctx.fillRect(0, 232, canvas.width, CELL_SIZE * 0.2);
-    }
+    canvas_ctx.fillStyle = current_theme.road;
+    canvas_ctx.fillRect(0, 232, canvas.width, CELL_SIZE * 0.2);
 
     // score card update
     canvas_ctx.font = "20px Arcade";
@@ -175,7 +193,7 @@ function event_loop() {
     // first time
     if (is_first_time) {
         is_first_time = false;
-        paint_layout(dino_layout.stand, harmfull_characters_pool[0].get_position().get());
+        paint_layout(dino_layout.stand, harmful_characters_pool[0].get_position().get());
         game_over = Date.now();
 
         canvas_ctx.textBaseline = 'middle';
@@ -188,30 +206,32 @@ function event_loop() {
 
     // characters
     // new characters generate
-    [[harmless_character_allocator, harmless_characters_pool], [harmfull_character_allocator, harmfull_characters_pool]].forEach(character_allocator_details => {
-        for (let i = 0; i < character_allocator_details[0].length; i++) {
-            const ALLOCATOR = character_allocator_details[0][i];
-            ALLOCATOR.tick();
-            const RANDOM_CHARACTER = ALLOCATOR.get_character();
+    [[harmless_character_allocator, harmless_characters_pool], [harmful_character_allocator, harmful_characters_pool]].forEach(([allocators, pool]) => {
+        for (let i = 0; i < allocators.length; i++) {
+            allocators[i].tick();
+            const RANDOM_CHARACTER = allocators[i].get_character();
             if (RANDOM_CHARACTER) {
                 RANDOM_CHARACTER.get_velocity().add(cumulative_velocity);
-                character_allocator_details[1].push(RANDOM_CHARACTER);
+                pool.push(RANDOM_CHARACTER);
             }
         }
     });
 
-    // increase velocity
-    if (game_score % 100 == 0) {
+    // increase velocity once per 100-point milestone
+    const current_milestone = Math.floor(game_score / 100);
+    const milestone_crossed = game_score > 0 && current_milestone > last_milestone;
+    if (milestone_crossed) {
+        last_milestone = current_milestone;
         cumulative_velocity.add(step_velocity);
     }
 
     // characters display
-    [harmless_characters_pool, harmfull_characters_pool].forEach((characters_pool, index) => {
+    [harmless_characters_pool, harmful_characters_pool].forEach((characters_pool, index) => {
 
         for (let i = characters_pool.length - 1; i >= 0; i--) {
 
-            // Increase velocity on each cycle
-            if ((!(index == 1 && i == 0)) && (game_score % 100 == 0)) {
+            // Speed up on-screen characters at each milestone
+            if ((!(index == 1 && i == 0)) && milestone_crossed) {
                 characters_pool[i].get_velocity().add(step_velocity);
             }
 
@@ -237,25 +257,25 @@ function event_loop() {
     });
 
 
-    // harmfull characters collision detection
-    let dino_character = harmfull_characters_pool[0];
+    // harmful characters collision detection
+    let dino_character = harmful_characters_pool[0];
     let dino_current_position = dino_character.get_position();
     let dino_current_layout = dino_character.get_layout();
-    for (let i = harmfull_characters_pool.length - 1; i > 0; i--) {
-        const HARMFULL_CHARACTER_POSITION = harmfull_characters_pool[i].get_position();
-        const HARMFULL_CHARACTER_LAYOUT = harmfull_characters_pool[i].get_layout();
-        if (isCollided(dino_current_position.get()[0], dino_current_position.get()[1], dino_current_layout.length, dino_current_layout[0].length, HARMFULL_CHARACTER_POSITION.get()[0], HARMFULL_CHARACTER_POSITION.get()[1], HARMFULL_CHARACTER_LAYOUT.length, HARMFULL_CHARACTER_LAYOUT[0].length)) {
+    for (let i = harmful_characters_pool.length - 1; i > 0; i--) {
+        const HARMFUL_CHARACTER_POSITION = harmful_characters_pool[i].get_position();
+        const HARMFUL_CHARACTER_LAYOUT = harmful_characters_pool[i].get_layout();
+        if (isCollided(dino_current_position.get()[0], dino_current_position.get()[1], dino_current_layout.length, dino_current_layout[0].length, HARMFUL_CHARACTER_POSITION.get()[0], HARMFUL_CHARACTER_POSITION.get()[1], HARMFUL_CHARACTER_LAYOUT.length, HARMFUL_CHARACTER_LAYOUT[0].length)) {
             canvas_ctx.textBaseline = 'middle';
             canvas_ctx.textAlign = 'center';
             canvas_ctx.font = "25px Arcade";
             canvas_ctx.fillStyle = current_theme.info_text;
             canvas_ctx.fillText("G     A     M     E             O     V     E     R", canvas.width / 2, (canvas.height / 2) - 50);
             paint_layout(retry_layout, new Position((canvas.height / 2) - retry_layout.length, (canvas.width / 2) - retry_layout[0].length).get());
-            paint_layout(dino_layout.dead, harmfull_characters_pool[0].get_position().get());
+            paint_layout(dino_layout.dead, harmful_characters_pool[0].get_position().get());
             game_over = Date.now();
 
-
-            if (localStorage.getItem("project.github.chrome_dino.high_score") < game_score) {
+            if (game_score > game_hi_score) {
+                game_hi_score = game_score;
                 localStorage.setItem("project.github.chrome_dino.high_score", game_score);
             }
 
@@ -263,15 +283,22 @@ function event_loop() {
         }
     }
 
-    // dino jump case
-    dino_character.set_position(applyVelocityToPosition(dino_character.get_position(), dino_current_trust));
+    // dino jump case — apply hold boost while button is held, up to max frames
+    if (is_jump_held && jump_hold_frames_remaining > 0) {
+        dino_current_thrust.add(DINO_JUMP_HOLD_BOOST);
+        jump_hold_frames_remaining--;
+    }
+
+    dino_character.set_position(applyVelocityToPosition(dino_character.get_position(), dino_current_thrust));
 
     if (dino_character.get_position().get()[0] > DINO_FLOOR_INITIAL_POSITION.get()[0]) {
         dino_character.set_position(DINO_FLOOR_INITIAL_POSITION.clone());
         dino_ready_to_jump = true;
+        is_jump_held = false;
+        jump_hold_frames_remaining = 0;
     }
 
-    dino_current_trust.sub(ENVIRONMENT_GRAVITY);
+    dino_current_thrust.sub(ENVIRONMENT_GRAVITY);
 
     requestAnimationFrame(event_loop);
 }
